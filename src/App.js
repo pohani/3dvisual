@@ -4,9 +4,30 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Edges } from '@react-three/drei';
 import './App.css';
 
-// -----------------------------
-// 1) Cylinder Component
-// -----------------------------
+// Reusable control: shows a label, a number input, and a slider.
+function LabeledControl({ label, value, onChange, sliderMin, sliderMax, step }) {
+  return (
+    <div className="control-group">
+      <label>{label}</label>
+      <input
+        type="number"
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        step={step}
+      />
+      <input
+        type="range"
+        min={sliderMin}
+        max={sliderMax}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        step={step}
+      />
+    </div>
+  );
+}
+
+// Cylinder Component with pastel materials and thicker yellow outline for selection
 const Cylinder = forwardRef(
   (
     {
@@ -22,20 +43,17 @@ const Cylinder = forwardRef(
     },
     ref
   ) => {
-    // Use a refined pastel color palette
-    // These colors are chosen so that they're different but harmonious:
-    // Standard (default): pastel yellow, Basic: pastel peach,
-    // Phong: pastel coral, Lambert: pastel pink.
+    // Pastel color palette – each color is distinct but harmonious
     const getMaterial = (type) => {
       switch (type) {
         case 'basic':
-          return <meshBasicMaterial color="#FAD7A0" />;
+          return <meshBasicMaterial color="#FAD7A0" />; // Pastel Peach
         case 'phong':
-          return <meshPhongMaterial color="#F5CBA7" />;
+          return <meshPhongMaterial color="#F5CBA7" />; // Pastel Coral
         case 'lambert':
-          return <meshLambertMaterial color="#FADBD8" />;
+          return <meshLambertMaterial color="#FADBD8" />; // Pastel Pink
         default:
-          return <meshStandardMaterial color="#F9E79F" />;
+          return <meshStandardMaterial color="#F9E79F" />; // Pastel Yellow
       }
     };
 
@@ -51,20 +69,18 @@ const Cylinder = forwardRef(
       >
         <cylinderGeometry args={[radiusTop, radiusBottom, height, 32]} />
         {getMaterial(materialType)}
-        {/* Outline edges: thicker yellow outline for the selected cylinder */}
+        {/* Outline edges: thicker yellow outline when selected */}
         <Edges
           threshold={15}
-          color={isSelected ? "yellow" : "black"}
-          lineWidth={isSelected ? 3 : 1}
+          color={isSelected ? '#ab6036' : 'black'}
+          lineWidth={isSelected ? 5 : 1}
         />
       </mesh>
     );
   }
 );
 
-// -----------------------------
-// 2) Scene Component
-// -----------------------------
+// Scene Component renders a cylinder and passes along the selection state.
 function Scene({ cylinderProps, cylinderRefSetter, cylinderId, onSelect, isSelected }) {
   const meshRef = useRef();
 
@@ -85,13 +101,12 @@ function Scene({ cylinderProps, cylinderRefSetter, cylinderId, onSelect, isSelec
   );
 }
 
-// -----------------------------
-// 3) Main App Component
-// -----------------------------
+// Main App Component
 function App() {
   const [selectedCylinder, setSelectedCylinder] = useState('cylinder1');
   const [cylinderParams, setCylinderParams] = useState({
     cylinder1: {
+      // Both radii are the same now (symmetric)
       radiusTop: 1,
       radiusBottom: 1,
       height: 2,
@@ -110,7 +125,22 @@ function App() {
   });
   const [cylinderMeshes, setCylinderMeshes] = useState({});
   const fileInputRef = useRef(null);
+  // For mobile: toggles the display of import/export controls.
+  const [showImportExport, setShowImportExport] = useState(false);
 
+  // Update function for Radius: sets both radiusTop and radiusBottom.
+  const updateRadius = (value) => {
+    setCylinderParams((prev) => ({
+      ...prev,
+      [selectedCylinder]: {
+        ...prev[selectedCylinder],
+        radiusTop: value,
+        radiusBottom: value,
+      },
+    }));
+  };
+
+  // Add a new cylinder with default parameters.
   const addCylinder = () => {
     const count = Object.keys(cylinderParams).length;
     const newId = 'cylinder' + (count + 1);
@@ -130,6 +160,7 @@ function App() {
     setSelectedCylinder(newId);
   };
 
+  // Exports cylinders to a text file.
   const handleExport = () => {
     let exportString = '';
     let index = 1;
@@ -159,12 +190,14 @@ function App() {
     link.click();
   };
 
+  // Trigger hidden file input for importing.
   const handleImportClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
+  // Reads and parses the imported file.
   const handleFileImport = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -209,6 +242,7 @@ function App() {
     reader.readAsText(file);
   };
 
+  // Helpers to update other parameters.
   const updateParam = (key, value) => {
     setCylinderParams((prev) => ({
       ...prev,
@@ -259,8 +293,16 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Fixed Import/Export Buttons */}
-      <div className="export-import-container">
+      {/* Mobile toggle button for Import/Export */}
+      <div
+        className="import-export-toggle"
+        onClick={() => setShowImportExport(!showImportExport)}
+      >
+        {showImportExport ? '-' : '+'}
+      </div>
+
+      {/* Import/Export container; on mobile it toggles under the toggle button */}
+      <div className={`export-import-container ${showImportExport ? 'active' : ''}`}>
         <button className="import-btn" onClick={handleImportClick}>
           Import
         </button>
@@ -276,7 +318,7 @@ function App() {
         onChange={handleFileImport}
       />
 
-      {/* Sidebar */}
+      {/* Sidebar with controls */}
       <div className="sidebar">
         <div className="sidebar-header">
           <h2>Cylinder Controls</h2>
@@ -295,117 +337,86 @@ function App() {
           </select>
         </div>
 
+        {/* Geometry Controls */}
         <div className="control-section">
           <h3>Geometry</h3>
-          <div className="control-group">
-            <label>Radius Top:</label>
-            <input
-              type="number"
-              step="0.1"
-              value={cylinderParams[selectedCylinder].radiusTop}
-              onChange={(e) =>
-                updateParam('radiusTop', parseFloat(e.target.value))
-              }
-            />
-          </div>
-          <div className="control-group">
-            <label>Radius Bottom:</label>
-            <input
-              type="number"
-              step="0.1"
-              value={cylinderParams[selectedCylinder].radiusBottom}
-              onChange={(e) =>
-                updateParam('radiusBottom', parseFloat(e.target.value))
-              }
-            />
-          </div>
-          <div className="control-group">
-            <label>Height:</label>
-            <input
-              type="number"
-              step="0.1"
-              value={cylinderParams[selectedCylinder].height}
-              onChange={(e) =>
-                updateParam('height', parseFloat(e.target.value))
-              }
-            />
-          </div>
+          <LabeledControl
+            label="Radius:"
+            value={cylinderParams[selectedCylinder].radiusTop}
+            onChange={updateRadius}
+            sliderMin={0.1}
+            sliderMax={5}
+            step={0.1}
+          />
+          <LabeledControl
+            label="Height:"
+            value={cylinderParams[selectedCylinder].height}
+            onChange={(v) => updateParam('height', v)}
+            sliderMin={0}
+            sliderMax={20}
+            step={0.1}
+          />
         </div>
 
+        {/* Rotation Controls */}
         <div className="control-section">
           <h3>Rotation</h3>
-          <div className="control-group">
-            <label>Rotation X:</label>
-            <input
-              type="number"
-              step="0.1"
-              value={cylinderParams[selectedCylinder].rotation[0]}
-              onChange={(e) =>
-                updateRotation(0, parseFloat(e.target.value))
-              }
-            />
-          </div>
-          <div className="control-group">
-            <label>Rotation Y:</label>
-            <input
-              type="number"
-              step="0.1"
-              value={cylinderParams[selectedCylinder].rotation[1]}
-              onChange={(e) =>
-                updateRotation(1, parseFloat(e.target.value))
-              }
-            />
-          </div>
-          <div className="control-group">
-            <label>Rotation Z:</label>
-            <input
-              type="number"
-              step="0.1"
-              value={cylinderParams[selectedCylinder].rotation[2]}
-              onChange={(e) =>
-                updateRotation(2, parseFloat(e.target.value))
-              }
-            />
-          </div>
+          <LabeledControl
+            label="Rotation X:"
+            value={cylinderParams[selectedCylinder].rotation[0]}
+            onChange={(v) => updateRotation(0, v)}
+            sliderMin={-180}
+            sliderMax={180}
+            step={0.1}
+          />
+          <LabeledControl
+            label="Rotation Y:"
+            value={cylinderParams[selectedCylinder].rotation[1]}
+            onChange={(v) => updateRotation(1, v)}
+            sliderMin={-180}
+            sliderMax={180}
+            step={0.1}
+          />
+          <LabeledControl
+            label="Rotation Z:"
+            value={cylinderParams[selectedCylinder].rotation[2]}
+            onChange={(v) => updateRotation(2, v)}
+            sliderMin={-180}
+            sliderMax={180}
+            step={0.1}
+          />
         </div>
 
+        {/* Position Controls */}
         <div className="control-section">
           <h3>Position</h3>
-          <div className="control-group">
-            <label>Offset X:</label>
-            <input
-              type="number"
-              step="0.1"
-              value={cylinderParams[selectedCylinder].position[0]}
-              onChange={(e) =>
-                updatePosition(0, parseFloat(e.target.value))
-              }
-            />
-          </div>
-          <div className="control-group">
-            <label>Offset Y:</label>
-            <input
-              type="number"
-              step="0.1"
-              value={cylinderParams[selectedCylinder].position[1]}
-              onChange={(e) =>
-                updatePosition(1, parseFloat(e.target.value))
-              }
-            />
-          </div>
-          <div className="control-group">
-            <label>Offset Z:</label>
-            <input
-              type="number"
-              step="0.1"
-              value={cylinderParams[selectedCylinder].position[2]}
-              onChange={(e) =>
-                updatePosition(2, parseFloat(e.target.value))
-              }
-            />
-          </div>
+          <LabeledControl
+            label="Offset X:"
+            value={cylinderParams[selectedCylinder].position[0]}
+            onChange={(v) => updatePosition(0, v)}
+            sliderMin={-20}
+            sliderMax={20}
+            step={0.1}
+          />
+          <LabeledControl
+            label="Offset Y:"
+            value={cylinderParams[selectedCylinder].position[1]}
+            onChange={(v) => updatePosition(1, v)}
+            sliderMin={-20}
+            sliderMax={20}
+            step={0.1}
+          />
+          <LabeledControl
+            label="Offset Z:"
+            value={cylinderParams[selectedCylinder].position[2]}
+            onChange={(v) => updatePosition(2, v)}
+            sliderMin={-20}
+            sliderMax={20}
+            step={0.1}
+          />
         </div>
 
+        {/* Material Control */}
         <div className="control-section">
           <h3>Material</h3>
           <div className="control-group">

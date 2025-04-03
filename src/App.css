@@ -6,7 +6,7 @@
   font-family: Arial, sans-serif;
 }
 
-/* Fixed Import/Export Container at Top Right */
+/* Desktop Import/Export Container */
 .export-import-container {
   position: fixed;
   top: 20px;
@@ -14,6 +14,11 @@
   z-index: 1000;
   display: flex;
   gap: 10px;
+}
+
+/* Desktop: Hide mobile toggle */
+.import-export-toggle {
+  display: none;
 }
 
 .export-import-container button {
@@ -50,6 +55,7 @@
   background: #f7f7f7;
   border-right: 1px solid #ddd;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .sidebar-header {
@@ -75,7 +81,7 @@
   color: #555;
 }
 
-/* Control groups for labels and inputs */
+/* Control groups for labels, number inputs, and sliders */
 .control-group {
   display: flex;
   align-items: center;
@@ -88,13 +94,13 @@
   color: #333;
 }
 
-.control-group input,
-.control-group select {
+.control-group input[type="number"] {
+  width: 60px;
+  margin-right: 10px;
+}
+
+.control-group input[type="range"] {
   flex: 1;
-  padding: 5px;
-  font-size: 0.9rem;
-  border: 1px solid #ccc;
-  border-radius: 3px;
 }
 
 /* Actions button within sidebar */
@@ -120,4 +126,78 @@
   flex: 1;
   height: 100vh;
   background: #eaeaea;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+    overflow: hidden;
+    /* Fixed height, disable scrolling */
+    height: 100vh;
+  }
+
+  /* Sidebar becomes top half (50% of screen) */
+  .sidebar {
+    width: 100%;
+    height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    /* Ensure right side padding matches left */
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  /* Canvas becomes bottom half (50% of screen) */
+  .canvas-container {
+    width: 100%;
+    height: 50vh;
+    background: #eaeaea;
+  }
+
+  /* Increase input sizes for easier touch interactions */
+  .control-group label,
+  .control-group input {
+    font-size: 1rem;
+  }
+
+  .control-group input[type="number"] {
+    width: 70px;
+    margin-right: 10px;
+  }
+
+  /* Hide import/export container by default on mobile */
+  .export-import-container {
+    display: none;
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .export-import-container.active {
+    display: flex;
+  }
+
+  /* Mobile toggle button for import/export */
+  .import-export-toggle {
+    display: block;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #17a2b8;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    line-height: 40px;
+    text-align: center;
+    z-index: 1100;
+    cursor: pointer;
+  }
 }
