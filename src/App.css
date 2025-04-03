@@ -1,0 +1,123 @@
+/* App.css */
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Fixed Import/Export Container at Top Right */
+.export-import-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+}
+
+.export-import-container button {
+  padding: 10px 15px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.export-import-container .export-btn {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.export-import-container .export-btn:hover {
+  background-color: #218838;
+}
+
+.export-import-container .import-btn {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.export-import-container .import-btn:hover {
+  background-color: #138496;
+}
+
+/* Sidebar styling */
+.sidebar {
+  width: 300px;
+  padding: 20px;
+  background: #f7f7f7;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  margin-bottom: 20px;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* Control Sections */
+.control-section {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.control-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+/* Control groups for labels and inputs */
+.control-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.control-group label {
+  width: 100px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.control-group input,
+.control-group select {
+  flex: 1;
+  padding: 5px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* Actions button within sidebar */
+.control-section.actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.control-section.actions button {
+  flex: 1;
+  padding: 8px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 3px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Canvas container styling */
+.canvas-container {
+  flex: 1;
+  height: 100vh;
+  background: #eaeaea;
+}
