@@ -1,7 +1,7 @@
 // App.jsx
 import React, { useState, useRef, forwardRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Edges, Wireframe } from '@react-three/drei';
+import { OrbitControls, Edges, Wireframe, Text } from '@react-three/drei';
 import './App.css';
 
 // Reusable control: shows a label, a number input, and a slider.
@@ -932,6 +932,34 @@ function App() {
           <pointLight position={[10, 10, 10]} />
           <OrbitControls />
           <axesHelper args={[5]} />
+          {/* Axis Labels */}
+          <Text
+            position={[5.5, 0, 0]}
+            fontSize={0.5}
+            color="red"
+            anchorX="center"
+            anchorY="middle"
+          >
+            X
+          </Text>
+          <Text
+            position={[0, 5.5, 0]}
+            fontSize={0.5}
+            color="green"
+            anchorX="center"
+            anchorY="middle"
+          >
+            Y
+          </Text>
+          <Text
+            position={[0, 0, 5.5]}
+            fontSize={0.5}
+            color="blue"
+            anchorX="center"
+            anchorY="middle"
+          >
+            Z
+          </Text>
           {Object.entries(cylinderParams).map(([id, params]) => (
             <Scene
               key={id}
