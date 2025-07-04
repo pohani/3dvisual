@@ -569,7 +569,7 @@ function App() {
     const blob = new Blob([exportString], { type: 'text/plain' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'model.txt';
+    link.download = 'model.qads';
     link.click();
     
     if (collisions.length > 0) {
@@ -785,7 +785,7 @@ function App() {
       </div>
       <input
         type="file"
-        accept=".txt"
+        accept=".qads"
         style={{ display: 'none' }}
         ref={fileInputRef}
         onChange={handleFileImport}
