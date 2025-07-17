@@ -564,7 +564,7 @@ function App() {
       index++;
     }
     
-    exportString += '\noesnt worend geom\n';
+    exportString += '\nend geom\n';
 
     const blob = new Blob([exportString], { type: 'text/plain' });
     const link = document.createElement('a');
